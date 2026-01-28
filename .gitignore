@@ -1,0 +1,9 @@
+# Python artifacts
+__pycache__/
+*.pyc
+
+# Heavy Data & Media (Do not push these!)
+*.mp4
+*.avi
+*.pt
+*.pkl
