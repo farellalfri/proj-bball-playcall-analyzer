@@ -7,13 +7,13 @@ from utils import read_stub, save_stub
 
 class TeamAssigner:
   def __init__(self,
-               team_1_class_name="purple shirt",
-               team_2_class_name="white shirt"):
+               team_1_class_name="red shirt",
+               team_2_class_name="yellow shirt"):
     
     self.team_1_class_name = team_1_class_name
     self.team_2_class_name = team_2_class_name
-
-    self.player_tem_dict = {}
+    self.team_colors = {}
+    self.player_team_dict = {}
 
   def load_model(self):
     self.model = CLIPModel.from_pretrained("patrickjohncyh/fashion-clip")
@@ -24,10 +24,11 @@ class TeamAssigner:
 
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     pil_image = Image.fromarray(rgb_image)
+    image = pil_image
 
-    classes = self.team_1_class_name, self.team_2_class_name
+    classes = [self.team_1_class_name, self.team_2_class_name]
 
-    inputs = self.processor(text=classes, images=pil_image, return_tensors="pt", padding=True)
+    inputs = self.processor(text=classes, images=image, return_tensors="pt", padding=True)
 
     outputs = self.model(**inputs)
     logits_per_image = outputs.logits_per_image
@@ -38,8 +39,8 @@ class TeamAssigner:
   
   def get_player_team(self, frame, player_bbox, player_id):
     
-    if player_id in self.player_tem_dict:
-      return self.player_tem_dict[player_id]
+    if player_id in self.player_team_dict:
+      return self.player_team_dict[player_id]
 
     player_color = self.get_player_color(frame, player_bbox)
 
@@ -47,7 +48,7 @@ class TeamAssigner:
     if player_color == self.team_1_class_name:
       team_id = 1
     
-    self.player_tem_dict[player_id] = team_id
+    self.player_team_dict[player_id] = team_id
     return team_id
   
   def get_player_teams_across_frames(self, video_frames, player_tracks, read_from_stub=False, stub_path=None):
@@ -65,8 +66,8 @@ class TeamAssigner:
       
       player_assignment.append({})
 
-      if frame_num % 20 == 0:
-        self.player_tem_dict = {}
+      if frame_num % 50 == 0:
+        self.player_team_dict = {}
 
       for player_id, track in player_track.items():
         team = self.get_player_team(video_frames[frame_num], track['bbox'], player_id)

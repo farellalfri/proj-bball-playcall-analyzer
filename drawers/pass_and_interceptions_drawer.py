@@ -10,15 +10,15 @@ class PassInterceptionDrawer:
     team_1_interceptions = []
     team_2_interceptions = []
 
-    for frame_num in range(len(passes)):
-      if passes[frame_num] == 1:
+    for frame_num, (pass_frame, interception_frame) in enumerate(zip(passes, interceptions)):
+      if pass_frame == 1:
         team_1_passes.append(frame_num)
-      elif passes[frame_num] == 2:
+      elif pass_frame == 2:
         team_2_passes.append(frame_num)
 
-      if interceptions[frame_num] == 1:
+      if interception_frame == 1:
         team_1_interceptions.append(frame_num)
-      elif interceptions[frame_num] == 2:
+      elif interception_frame == 2:
         team_2_interceptions.append(frame_num)
 
     return len(team_1_passes), len(team_2_passes), len(team_1_interceptions), len(team_2_interceptions)
@@ -27,6 +27,8 @@ class PassInterceptionDrawer:
     output_video_frames = []
 
     for frame_num, frame in enumerate(video_frames):
+      if frame_num == 0:
+        continue
       
       frame_drawn = self.draw_frame(frame, frame_num, passes, interceptions)
       output_video_frames.append(frame_drawn)

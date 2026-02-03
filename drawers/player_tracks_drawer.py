@@ -2,7 +2,7 @@ from .utils import draw_ellipse, draw_triangle
 
 class PlayerTracksDrawer:
 
-  def __init__(self, team_1_color=[123,43,64], team_2_color=[233,224,216]):
+  def __init__(self, team_1_color=[117,40,61], team_2_color=[255,255,255]):
     self.default_player_team_id = 1
     self.team_1_color = team_1_color
     self.team_2_color = team_2_color
@@ -29,10 +29,10 @@ class PlayerTracksDrawer:
         else:
           color = self.team_2_color
 
+        frame = draw_ellipse(frame, player['bbox'], color, track_id)
+
         if track_id == player_id_has_ball:
           frame = draw_triangle(frame, player['bbox'], (0,0,255))
-
-        frame = draw_ellipse(frame, player['bbox'], color, track_id)
 
       output_video_frames.append(frame)
 

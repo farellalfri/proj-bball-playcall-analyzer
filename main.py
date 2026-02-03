@@ -11,8 +11,8 @@ def main():
   video_frames = read_video("input_videos/basketball_game7.mp4")
 
   # Initialize Tracker
-  player_tracker = PlayerTracker("models/player_detector.pt")
-  ball_tracker = BallTracker("models/ball_detector_model.pt")
+  player_tracker = PlayerTracker("models/player_detector2.pt")
+  ball_tracker = BallTracker("models/ball_detector_model2.pt")
 
   # Run Trackers
   player_tracks = player_tracker.get_object_tracks(video_frames,
@@ -74,7 +74,7 @@ def main():
                                                        interceptions)
 
   # Save Video
-  save_video(output_video_frames, "output_videos/output_video7.avi")
+  save_video(output_video_frames, "output_videos/output_video7_test.avi")
 
 
 if __name__ == "__main__":
