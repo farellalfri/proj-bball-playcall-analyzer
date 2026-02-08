@@ -1,29 +1,45 @@
+from drawers.court_key_points_drawer import CourtKeypointDrawer
 from utils import read_video, save_video
 from trackers import PlayerTracker, BallTracker
-from drawers import (PlayerTracksDrawer, BallTracksDrawer, TeamBallControlDrawer, PassInterceptionDrawer)
+from drawers import (
+  PlayerTracksDrawer, 
+  BallTracksDrawer, 
+  TeamBallControlDrawer, 
+  PassInterceptionDrawer,
+  CourtKeypointDrawer)
 from team_assigner import TeamAssigner
 from ball_acquisition import BallAcquisitionDetector
 from pass_and_interception_detector import PassAndInterceptionDetector
+from court_keypoint_detector import CourtKeypointDetector
 
 def main():
 
   # Read Video
-  video_frames = read_video("input_videos/basketball_game7.mp4")
+  video_frames = read_video("input_videos/basketball_game5.mp4")
 
   # Initialize Tracker
-  player_tracker = PlayerTracker("models/player_detector2.pt")
-  ball_tracker = BallTracker("models/ball_detector_model2.pt")
+  player_tracker = PlayerTracker("models/player_detector.pt")
+  ball_tracker = BallTracker("models/ball_detector_model.pt")
+
+  # Initialize Court Keypoint Detector
+  court_keypoint_detector = CourtKeypointDetector("models/court_keypoint_detector.pt")
 
   # Run Trackers
   player_tracks = player_tracker.get_object_tracks(video_frames,
                                                    read_from_stub=True,
-                                                   stub_path="stubs/player_track_stubs.pkl"
+                                                   stub_path="stubs/player_track_stubs5.pkl"
                                                    )
   
   ball_tracks = ball_tracker.get_object_tracks(video_frames, 
                                                read_from_stub=True,
-                                               stub_path="stubs/ball_track_stubs.pkl"
+                                               stub_path="stubs/ball_track_stubs5.pkl"
                                               )
+  
+  # Get Court Keypoints
+  court_keypoints = court_keypoint_detector.get_court_keypoints(video_frames,
+                                                                read_from_stub=True,
+                                                                stub_path="stubs/court_keypoint_stubs5.pkl"
+                                                                )
 
   # Remove wrong Ball Detections
   ball_tracks = ball_tracker.remove_wrong_detections(ball_tracks)
@@ -35,7 +51,7 @@ def main():
   player_assignment = team_assigner.get_player_teams_across_frames(video_frames,
                                                               player_tracks,
                                                               read_from_stub=True,
-                                                              stub_path="stubs/player_assignment_stubs.pkl"
+                                                              stub_path="stubs/player_assignment_stubs5.pkl"
                                                               )
 
   # Ball Acquisition
@@ -53,6 +69,7 @@ def main():
   ball_tracks_drawer = BallTracksDrawer()
   team_ball_control_drawer = TeamBallControlDrawer()
   pass_interception_drawer = PassInterceptionDrawer()
+  court_keypoint_drawer = CourtKeypointDrawer()
 
   # Draw Object Tracks
   output_video_frames = player_tracks_drawer.draw(video_frames, 
@@ -73,8 +90,11 @@ def main():
                                                        passes, 
                                                        interceptions)
 
+  # Draw Court Keypoints
+  output_video_frames = court_keypoint_drawer.draw(output_video_frames, court_keypoints)
+
   # Save Video
-  save_video(output_video_frames, "output_videos/output_video7_test.avi")
+  save_video(output_video_frames, "output_videos/output_video5_test.avi")
 
 
 if __name__ == "__main__":

@@ -59,8 +59,10 @@ class PassInterceptionDrawer:
     passes_till_frame = passes[:frame_num+1]
     interceptions_till_frame = interceptions[:frame_num+1]
 
-    team1__passes, team2_passes, team1_interceptions, team2_interceptions = self.get_stats(passes_till_frame, 
-    interceptions_till_frame)
+    team1__passes, team2_passes, team1_interceptions, team2_interceptions = self.get_stats(
+      passes_till_frame, 
+      interceptions_till_frame
+    )
 
     cv2.putText(frame, f"Team 1 - Passes: {team1__passes} Interceptions: {team1_interceptions}", 
                 (text_x, text_y1), 
